@@ -13,3 +13,5 @@ node_modules/
 *.d
 *.a
 *.so
+.idea/
+package-lock.json
