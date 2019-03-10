@@ -30,7 +30,7 @@ install_deps() {
   local OS=`${this}/detectOS.sh | awk '{print tolower($0)}'`
   echo $OS
 
-  if [[ "$OS" =~ .*centos.* ]]
+  if [[ "$OS" =~ .*centos.* ]] || [[ "$OS" =~ .*alibaba.* ]]
   then
     echo -e "\x1b[32mInstalling dependent components and libraries via yum...\x1b[0m"
     if [[ "$OS" =~ .*6.* ]] # CentOS 6.x
@@ -64,7 +64,7 @@ install_db() {
 
     local OS=`${this}/detectOS.sh | awk '{print tolower($0)}'`
     # Use default configuration
-    if [[ "$OS" =~ .*centos.* ]]
+    if [[ "$OS" =~ .*centos.* ]] || [[ "$OS" =~ .*alibaba.* ]]
     then
       echo "Start mongodb - \"systemctl start mongod\""
       ${SUDO} systemctl start mongod

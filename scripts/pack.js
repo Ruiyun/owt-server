@@ -377,7 +377,7 @@ function getAddonLibs(addonPath) {
                   if (out.includes('libc6') || out.includes('libselinux')) return '';
                   return line;
                 }).catch((e) => line);
-            } else if (osType.includes('centos')) {
+            } else if (osType.includes('centos') || osType.includes('alibaba')) {
               return exec(`rpm -qf ${line} 2>\/dev\/null`, { env })
                 .then((out, err) => {
                   if (out.includes('glibc')) return '';

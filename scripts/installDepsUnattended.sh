@@ -43,7 +43,7 @@ cd $PATHNAME
 
 mkdir -p $PREFIX_DIR
 
-if [[ "$OS" =~ .*centos.* ]]
+if [[ "$OS" =~ .*centos.* ]] || [[ "$OS" =~ .*alibaba.* ]]
 then
   . installCentOSDeps.sh
   if [ "$NIGHTLY" != "true" ]; then

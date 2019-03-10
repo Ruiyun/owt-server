@@ -37,7 +37,7 @@ cd $PATHNAME
 
 mkdir -p $PREFIX_DIR
 
-if [[ "$OS" =~ .*centos.* ]]
+if [[ "$OS" =~ .*centos.* ]] || [[ "$OS" =~ .*alibaba.* ]]
 then
   . installCentOSDeps.sh
   read -p "Add EPEL repository to yum? [Yes/no]" yn
