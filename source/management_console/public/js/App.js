@@ -4,6 +4,8 @@
 
 'use strict';
 
+import * as React from "react";
+
 const e = React.createElement;
 const ReactTable = window.ReactTable.default;
 // const restApi = window.restApi;
