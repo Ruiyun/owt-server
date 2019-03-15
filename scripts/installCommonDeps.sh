@@ -290,9 +290,10 @@ install_node() {
 }
 
 install_node_tools() {
-  npm install -g --loglevel error node-gyp grunt-cli underscore jsdoc
+  npm install -g cnpm --registry=https://registry.npm.taobao.org
+  cnpm install -g --loglevel error node-gyp grunt-cli underscore jsdoc
   pushd ${ROOT} >/dev/null
-  npm install nan@2.11.1
+  cnpm install nan@2.11.1
   pushd ${ROOT}/node_modules/nan >/dev/null
   patch -p1 < $PATHNAME/patches/nan.patch
   popd >/dev/null
