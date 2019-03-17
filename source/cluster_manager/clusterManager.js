@@ -122,6 +122,32 @@ var ClusterManager = function (clusterName, selfId, spec) {
         data_synchronizer && data_synchronizer({type: 'unscheduled', payload: {worker: worker, task: task}});
     };
 
+    const getWorkersWithAttr = function (purpose, on_ok, /* on_error */) {
+        const getWorkerInfo = function (worker_id) {
+            const worker = workers[worker_id];
+            const purpose = worker.purpose;
+            const scheduler = schedulers[purpose];
+            const worker_info = scheduler && scheduler.getInfo(worker_id) || {state: 0, load: 0, info: {}, tasks: []};
+
+            return {
+                id: worker_id,
+                state: worker_info.state,
+                load: worker_info.load,
+                info: purpose === 'portal' ? Object.assign({ip: worker_info.ip, purpose: purpose}, worker_info.info) : worker_info.info,
+                tasks: worker_info.tasks,
+                keepAlive: workers[worker_id].alive_count
+            };
+        };
+
+        if (purpose === 'all') {
+            on_ok(Object.keys(workers).map(getWorkerInfo));
+        } else {
+            on_ok(Object.entries(workers)
+                .filter(([_, worker]) => worker.purpose === purpose)
+                .map(([workerKey]) => getWorkerInfo(workerKey)));
+        }
+    };
+
     var getWorkerAttr = function (worker, on_ok, on_error) {
         if (workers[worker]) {
             var worker_info = schedulers[workers[worker].purpose] && schedulers[workers[worker].purpose].getInfo(worker);
@@ -280,6 +306,13 @@ var ClusterManager = function (clusterName, selfId, spec) {
         },
         unschedule: function (worker, task) {
             unschedule(worker, task);
+        },
+        getWorkersWithAttr: function(purpose, callback) {
+            getWorkersWithAttr(purpose, function (workers) {
+                callback('callback', workers);
+            }, function (error_reason) {
+                callback('callback', 'error', error_reason);
+            })
         },
         getWorkerAttr: function (worker, callback) {
             getWorkerAttr(worker, function (attr) {

@@ -58,6 +58,7 @@ var streamsResource = require('./resource/streamsResource');
 var streamingOutsResource = require('./resource/streamingOutsResource');
 var recordingsResource = require('./resource/recordingsResource');
 var sipcallsResource = require('./resource/sipcallsResource');
+var workersResource = require('./resource/workersResource');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -76,7 +77,7 @@ app.options('*', function(req, res) {
 });
 
 // Only following paths need authentication.
-var authPaths = ['/rooms*', '/v1/rooms*', '/services*', '/cluster*'];
+var authPaths = ['/rooms*', '/v1/rooms*', '/services*', '/cluster*', '/worker*'];
 app.get(authPaths, serverAuthenticator.authenticate);
 app.post(authPaths, serverAuthenticator.authenticate);
 app.delete(authPaths, serverAuthenticator.authenticate);
@@ -92,6 +93,9 @@ app.delete('/services/:service', serviceResource.deleteService);
 ////////////////////////////////////////////////////////////////////////////////////////////
 // v1 interface begin
 // /////////////////////////////////////////////////////////////////////////////////////////
+
+//Worker management
+app.get('/v1/workers/:purpose', workersResource.getList);
 
 //Room management
 app.post('/v1/rooms', roomsResource.createRoom); //FIXME: The definition of 'options' needs to be refined.
