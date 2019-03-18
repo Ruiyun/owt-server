@@ -42,17 +42,18 @@ install_fdkaac(){
 }
 
 install_ffmpeg(){
-  local VERSION="4.1"
+  local VERSION="4.1.1"
   local DIR="ffmpeg-${VERSION}"
   local SRC="${DIR}.tar.bz2"
   local SRC_URL="http://ffmpeg.org/releases/${SRC}"
-  local SRC_MD5SUM="8107e8f22a33b27a5e34b38e628eecc6"
+  local SRC_MD5SUM="4a64e3cb3915a3bf71b8b60795904800"
   mkdir -p ${LIB_DIR}
   pushd ${LIB_DIR}
   [[ ! -s ${SRC} ]] && wget -c ${SRC_URL}
   if ! (echo "${SRC_MD5SUM} ${SRC}" | md5sum --check) ; then
-    rm -f ${SRC} && wget -c ${SRC_URL} # try download again
-    (echo "${SRC_MD5SUM} ${SRC}" | md5sum --check) || (echo "Downloaded file ${SRC} is corrupted." && return 1)
+      echo "Downloaded file ${SRC} is corrupted."
+      rm -v ${SRC}
+      return 1
   fi
   rm -fr ${DIR}
   tar xf ${SRC}
@@ -282,9 +283,6 @@ install_node() {
   #install node
   [[ -s "${NVM_DIR}/nvm.sh" ]] && . "${NVM_DIR}/nvm.sh"
   echo -e "\x1b[32mInstalling node ${NODE_VERSION}...\x1b[0m"
-  if ! grep -qc 'nvm use' ~/.bash_profile; then
-   echo -e 'nvm use '${NODE_VERSION} >> ~/.bash_profile
-  fi
   nvm install ${NODE_VERSION}
   nvm use ${NODE_VERSION}
 }
@@ -376,39 +374,6 @@ install_gcc(){
     mkdir -p $LIB_DIR
     install_gcc
   fi
-}
-
-install_libvautils(){
-  export PKG_CONFIG_PATH=/opt/intel/mediasdk/lib64/pkgconfig/
-
-  local version_str=`pkg-config --variable=libva_version libva`
-  local major=`echo $version_str | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\1/'`
-  local minor=`echo $version_str | sed 's/\([0-9]\+\)\.\([0-9]\+\).*/\2/'`
-  local version=$[${major:-0}*1000+${minor:-0}]
-
-  echo "Detect libva-"$version_str
-
-  # Dont build before v1.8
-  if [ ${version} -lt  1008 ]
-  then
-    echo "Dont need libva-util"
-    return
-  fi
-
-  local branch=v${major}.${minor}-branch
-  echo "Use libva-util branch: " ${branch}
-
-  pushd ${LIB_DIR}
-  rm libva-utils -rf
-  git clone -b $branch https://github.com/intel/libva-utils.git
-
-  pushd libva-utils
-  ./autogen.sh --prefix=${PREFIX_DIR}
-  make -j4
-  make install
-
-  popd
-  popd
 }
 
 install_svt_hevc(){

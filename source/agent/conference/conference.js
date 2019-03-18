@@ -4,7 +4,6 @@
 
 'use strict';
 
-var Fraction = require('fraction.js');
 var logger = require('./logger').logger;
 
 var AccessController = require('./accessController');
@@ -1519,9 +1518,14 @@ var Conference = function (rpcClient, selfRpcId) {
   };
 
   const mix = function(streamId, toView) {
+    if (streams[streamId].isInConnecting) {
+      return Promise.reject('Stream is NOT ready');
+    }
+
     if (streams[streamId].info.inViews.indexOf(toView) !== -1) {
       return Promise.resolve('ok');
     }
+
     return new Promise((resolve, reject) => {
       roomController.mix(streamId, toView, function() {
         if (streams[streamId].info.inViews.indexOf(toView) === -1) {
@@ -1536,6 +1540,10 @@ var Conference = function (rpcClient, selfRpcId) {
   };
 
   const unmix = function(streamId, fromView) {
+    if (streams[streamId].isInConnecting) {
+      return Promise.reject('Stream is NOT ready');
+    }
+
     return new Promise((resolve, reject) => {
       roomController.unmix(streamId, fromView, function() {
         streams[streamId].info.inViews.splice(streams[streamId].info.inViews.indexOf(fromView), 1);
