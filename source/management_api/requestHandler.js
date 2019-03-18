@@ -484,4 +484,15 @@ exports.notifySipPortal = function (changeType, room, callback) {
     }});
 };
 
+exports.getWorkersByPurpose = function (purpose, callback) {
+  rpc.callRpc(cluster_name, 'getWorkersWithAttr', [purpose], {callback: result => {
+      log.debug(`getWorkersByPurpose, purpose: ${purpose} -> ${result}`);
+      if (result === 'error' || result === 'timeout') {
+        callback('error');
+      } else {
+        callback(result);
+      }
+    }});
+};
+
 

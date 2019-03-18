@@ -73,22 +73,22 @@ if (options.encrypt) {
   console.log('Checking encrypt dependencies...');
   try {
     for (const dep of encryptDeps) {
-      execSync(`npm list -g ${dep}`);
+      execSync(`cnpm list -g ${dep}`);
     }
     console.log('Encrypt dependencies OK.');
   } catch (e) {
     console.log('Install node dependencies for Encrypt...');
     for (const dep of encryptDeps) {
-      execSync(`npm install -g --save-dev ${dep}`, { stdio: 'inherit' });
+      execSync(`cnpm install -g --save-dev ${dep}`, { stdio: 'inherit' });
     }
   }
 }
 
 if (options.binary) {
   try {
-    execSync('npm list -g pkg@4.2.5');
+    execSync('cnpm list -g pkg@4.2.5');
   } catch (e) {
-    execSync('npm install -g pkg@4.2.5');
+    execSync('cnpm install -g pkg@4.2.5');
   }
   options['install-module'] = true;
 }
@@ -230,7 +230,7 @@ function packCommon(target) {
     // Copy common files
     for (const file of common.files) {
       const filePath = path.join(packSrc, file);
-      execSync(`cp -a ${filePath} ${packDist}`);
+      execSync(`cp --remove-destination -af ${filePath} ${packDist}`);
     }
   }
   if (common.folders) {
@@ -241,7 +241,7 @@ function packCommon(target) {
       for (const file of common.folders[folder]) {
         // Copy in-folder files or folders
         let filePath = path.join(packSrc, file);
-        execSync(`cp -a ${filePath} ${folderDist}`);
+        execSync(`cp --remove-destination -af ${filePath} ${folderDist}`);
       }
     }
   }
@@ -265,12 +265,12 @@ function packCommon(target) {
         execSync(`mkdir -p ${installDist}`);
         execSync(`cp ${filePath} ${installDist}`);
         chdir(installDist);
-        execSync('npm install', { stdio: [null, process.stdout, process.stderr] });
+        execSync('cnpm install', { stdio: [null, process.stdout, process.stderr] });
         const packageJson = path.basename(filePath);
         execSync(`mv ${packageJson} ${packageJson}.${target.rules.name}`);
       } else {
         chdir(installDist);
-        npmInstall = exec('npm install' + npmInstallOption)
+        npmInstall = exec('cnpm install' + npmInstallOption)
           .then((stdout, stderr) => {
             stdout && console.log(stdout);
             stderr && console.log(stderr);
@@ -489,7 +489,7 @@ function encrypt(target) {
   console.log('\x1b[32mEncrypt\x1b[0m -', target.rules.name);
 
   const packDist = path.join(distDir, target.rules.dest);
-  const nodeEnv = execSync(`npm root -g`).toString().trim();
+  const nodeEnv = execSync(`cnpm root -g`).toString().trim();
   const oldEnv = process.env['NODE_PATH'];
   process.env['NODE_PATH'] = nodeEnv;
   var env = process.env;
@@ -606,7 +606,7 @@ function packSamples() {
 
   if (options['install-module']) {
     chdir(`${distDir}/extras/basic_example`);
-    execSync('npm install' + npmInstallOption);
+    execSync('cnpm install' + npmInstallOption);
   }
 }
 
