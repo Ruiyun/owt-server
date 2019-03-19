@@ -1,1 +1,0 @@
-../common/amqp_client.js
